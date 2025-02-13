@@ -21,13 +21,14 @@ class Pemakaian extends Model
             }
         });
 
+
         static::saving(function ($pemakaian) {
             // Ambil tarif_kwh dari relasi pelanggan → tarif
             $tarifKwh = $pemakaian->pelanggan->tarif->tarif_kwh ?? 0;
-    
+
             // Hitung biaya_pemakaian
             $pemakaian->biaya_pemakaian = ($pemakaian->jumlah_pakai ?? 0) * $tarifKwh;
-    
+
             // Hitung total_bayar
             $pemakaian->total_bayar = ($pemakaian->biaya_beban ?? 0) + ($pemakaian->biaya_pemakaian ?? 0);
         });
@@ -41,5 +42,17 @@ class Pemakaian extends Model
     public function tarif()
     {
         return $this->belongsToThrough(Tarif::class, Pelanggan::class, null, '', [Tarif::class => 'jenis_plg', Pelanggan::class => 'jenis_plg']);
+    }
+
+    public function cetak($id)
+    {
+        $pemakaian = Pemakaian::with('pelanggan.tarif')->findOrFail($id);
+
+        // Jika ingin mengembalikan halaman HTML untuk cetak:
+        return view('pemakaian.cetak', compact('pemakaian'));
+
+        // Jika ingin langsung unduh sebagai PDF (gunakan Barryvdh DomPDF):
+        // $pdf = Pdf::loadView('pemakaian.cetak', compact('pemakaian'));
+        // return $pdf->download('rekening-listrik-' . $pemakaian->id . '.pdf');
     }
 }

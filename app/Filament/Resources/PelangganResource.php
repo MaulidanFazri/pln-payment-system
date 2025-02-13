@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -119,7 +120,15 @@ class PelangganResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
+
+                    Tables\Actions\EditAction::make()
+                        ->color('warning'),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

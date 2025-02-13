@@ -10,8 +10,11 @@ use App\Models\Pelanggan;
 use App\Models\Pemakaian;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Actions;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
@@ -164,39 +167,63 @@ class PemakaianResource extends Resource
             ->defaultSort('tahun', 'desc')
             ->defaultSort('bulan', 'desc')
             ->columns([
-                TextColumn::make('id')
-                ->label('ID'),
+                // TextColumn::make('id')
+                //     ->label('ID'),
 
                 TextColumn::make('no_kontrol')
-                ->label('No Kontrol')
-                ->searchable(),
+                    ->label('No Kontrol')
+                    ->searchable(),
 
                 TextColumn::make('tahun')
-                ->label('Tahun'),
+                    ->label('Tahun')
+                    ->sortable(),
 
                 TextColumn::make('bulan')
-                ->label('Bulan'),
+                    ->label('Bulan'),
+
+                TextColumn::make('pelanggan.nama')
+                    ->label('Nama')
+                    ->searchable(),
+
+                    TextColumn::make('pelanggan.alamat')
+                    ->label('Alamat'),
 
                 TextColumn::make('jumlah_pakai')
-                ->label('Jumlah Pakai'),
+                    ->label('Jumlah Pakai'),
 
                 TextColumn::make('biaya_beban')
-                ->label('Biaya Beban')
-                ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 2, ',', '.')),
+                    ->label('Biaya Beban')
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 2, ',', '.')),
 
                 TextColumn::make('biaya_pemakaian')
-                ->label('Biaya Pemakaian')
-                ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 2, ',', '.')),
+                    ->label('Biaya Pemakaian')
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 2, ',', '.')),
 
                 TextColumn::make('total_bayar')
-                ->label('Total Bayar')
-                ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 2, ',', '.')),
+                    ->label('Total Bayar')
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 2, ',', '.')),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
+
+                    Tables\Actions\EditAction::make()
+                        ->color('warning'),
+
+                    Action::make('cetak')
+                        ->label('Cetak')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->url(fn($record) => route('pemakaian.cetak', $record->id))
+                        ->color('success')
+                        ->openUrlInNewTab(),
+                ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
