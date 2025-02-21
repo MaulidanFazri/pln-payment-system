@@ -115,7 +115,14 @@ class PemakaianResource extends Resource
                             ->numeric()
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set, $get) {
-                                $jumlahPakai = max(0, $get('meter_akhir') - $get('meter_awal'));
+                                $meterAwal = $get('meter_awal') ?? 0;
+
+                                // Jika meter akhir lebih kecil dari meter awal, reset ke meter awal
+                                if ($state < $meterAwal) {
+                                    $set('meter_akhir', $meterAwal);
+                                }
+
+                                $jumlahPakai = max(0, $get('meter_akhir') - $meterAwal);
                                 $set('jumlah_pakai', $jumlahPakai);
 
                                 // Hitung biaya_pemakaian
@@ -125,6 +132,10 @@ class PemakaianResource extends Resource
 
                                 $totalBayar = $biayaPemakaian + ($get('biaya_beban') ?? 0);
                                 $set('total_bayar', $totalBayar);
+                            })
+                            ->rule(function (Closure $get) {
+                                $meterAwal = $get('meter_awal') ?? 0;
+                                return fn($state) => $state >= $meterAwal ? null : 'Meter Akhir tidak boleh lebih kecil dari Meter Awal.';
                             }),
 
                         TextInput::make('jumlah_pakai')
@@ -185,7 +196,7 @@ class PemakaianResource extends Resource
                     ->label('Nama')
                     ->searchable(),
 
-                    TextColumn::make('pelanggan.alamat')
+                TextColumn::make('pelanggan.alamat')
                     ->label('Alamat'),
 
                 TextColumn::make('jumlah_pakai')
@@ -209,9 +220,9 @@ class PemakaianResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     DeleteAction::make()
-                    ->label('Hapus')
-                    ->icon('heroicon-o-trash')
-                    ->color('danger'),
+                        ->label('Hapus')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger'),
 
                     Tables\Actions\EditAction::make()
                         ->color('warning'),
@@ -223,7 +234,6 @@ class PemakaianResource extends Resource
                         ->color('success')
                         ->openUrlInNewTab(),
                 ]),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -9,8 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-">
-    <nav class="border-gray-200 bg-white shadow">
+<body class="bg-gray-50 dark:bg-[#08080a]">
+    <nav class="border-gray-200 bg-white shadow dark:bg-[#19191c]">
         <div class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
             <a href="{{ url('/') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <img src="{{ asset('assets/logos/logo.png') }}" class="h-8" alt="Logo PLN" />
@@ -18,23 +18,23 @@
         </div>
     </nav>
 
-    <div class="container mx-auto mt-10 max-w-lg rounded-lg bg-white p-6 shadow-lg">
-        <h1 class="mb-6 text-center text-2xl font-bold">Pencarian Tagihan Listrik</h1>
+    <div class="container mx-auto mt-10 max-w-lg rounded-lg bg-white p-6 shadow-lg dark:bg-[#19191c]">
+        <h1 class="mb-6 text-center text-2xl font-bold dark:text-white">Pencarian Tagihan Listrik</h1>
 
         <form action="{{ route('pemakaian.index') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label for="no_kontrol" class="block font-medium text-gray-700">No. Kontrol</label>
+                <label for="no_kontrol" class="block font-medium text-gray-700 dark:text-gray-200">No. Kontrol</label>
                 <input type="number" name="no_kontrol" id="no_kontrol" required
-                    class="mt-1 w-full rounded border p-2 focus:outline-none focus:ring focus:ring-[#a5dde4]"
+                    class="mt-1 w-full rounded border p-2 focus:outline-none focus:ring focus:ring-[#a5dde4] dark:border-gray-700 dark:bg-[#19191c] dark:text-white"
                     min="0" inputmode="numeric" placeholder="Masukkan No. Kontrol">
 
             </div>
 
             <div>
-                <label for="tahun" class="block font-medium text-gray-700">Tahun</label>
+                <label for="tahun" class="block font-medium text-gray-700 dark:text-gray-200">Tahun</label>
                 <select name="tahun" id="tahun" required
-                    class="mt-1 w-full rounded border p-2 focus:outline-none focus:ring focus:ring-[#a5dde4]">
+                    class="mt-1 w-full rounded border p-2 focus:outline-none focus:ring focus:ring-[#a5dde4] dark:border-gray-700 dark:bg-[#19191c] dark:text-white">
                     @foreach ([2025, 2026, 2027] as $tahun)
                         <option value="{{ $tahun }}">{{ $tahun }}</option>
                     @endforeach
@@ -42,11 +42,12 @@
             </div>
 
             <div>
-                <label for="bulan" class="block font-medium text-gray-700">Bulan</label>
+                <label for="bulan" class="block font-medium text-gray-700 dark:text-gray-200">Bulan</label>
                 <select name="bulan" id="bulan" required
-                    class="mt-1 w-full rounded border p-2 focus:outline-none focus:ring focus:ring-[#a5dde4]">
+                    class="mt-1 w-full rounded border p-2 focus:outline-none focus:ring focus:ring-[#a5dde4] dark:border-gray-700 dark:bg-[#19191c] dark:text-white">
                     @foreach (range(1, 12) as $bulan)
-                        <option value="{{ $bulan }}">{{ DateTime::createFromFormat('!m', $bulan)->format('F') }}
+                        <option value="{{ $bulan }}">
+                            {{ DateTime::createFromFormat('!m', $bulan)->format('F') }}
                         </option>
                     @endforeach
                 </select>
@@ -59,7 +60,7 @@
         </form>
 
         @if ($pemakaian)
-            <div class="mt-6 rounded bg-green-100 p-4 shadow">
+            <div class="mt-6 rounded bg-green-100 p-4 shadow dark:bg-[#1e2d25] dark:text-white">
                 <h3 class="mb-2 text-lg font-bold">Hasil Pencarian</h3>
                 <p><strong>No. Kontrol:</strong> {{ $pemakaian->no_kontrol }}</p>
                 <p><strong>Tahun:</strong> {{ $pemakaian->tahun }}</p>
@@ -68,11 +69,12 @@
                 <p><strong>Total Bayar:</strong> Rp {{ number_format($pemakaian->total_bayar, 0, ',', '.') }}</p>
             </div>
         @elseif ($pemakaian === null && request()->isMethod('post'))
-            <div class="mt-6 rounded bg-red-100 p-4 shadow">
+            <div class="mt-6 rounded bg-red-100 p-4 shadow dark:bg-[#2f2224] dark:text-white">
                 <h3 class="mb-2 text-lg font-bold">Hasil Pencarian</h3>
                 <p>Data tidak ditemukan.</p>
             </div>
         @endif
+
     </div>
 </body>
 
